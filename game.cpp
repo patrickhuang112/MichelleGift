@@ -1,6 +1,53 @@
 #include "game.h"
 #include <iostream>
 
+class Q
+{
+    node_t front;
+    node_t back;
+    public:
+        
+        Q() {
+            node_t newNode = new node;
+            newNode->nextEvent = nullptr;
+            newNode->userEvent = "";
+            this->front = newNode;
+            this->back = newNode;
+        }
+
+        ~Q()
+        {
+            while(!this->isEmpty())
+            {
+               this->deq(); 
+            }
+            delete this->front;
+        }
+
+        bool isEmpty()
+        {
+            return this->front == this->back; 
+        }
+        
+        void enq(event action)
+        {
+           node_t newNode = new node;
+           newNode->userEvent = action;
+           newNode->nextEvent = nullptr;
+           this->back->nextEvent = newNode;
+           this->back = newNode; 
+        }
+        
+        event deq()
+        {
+            event action = this->front->userEvent;
+            node_t tmp = this->front;
+            this->front = this->front->nextEvent;
+            delete tmp;
+            return action;
+        }
+};
+
 
 void destroyObj(gameobj *obj)
 {
