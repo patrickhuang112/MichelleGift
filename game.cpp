@@ -1,6 +1,23 @@
 #include "game.h"
 #include <iostream>
 
+void destroyObj(gameobj *obj)
+{
+    delete obj;
+}
+
+
+void destroyLevel(level *lvl)
+{
+    for(int i = 0; i < lvl->numObjs; i++)
+    {
+        destroyObj(lvl->levelObjs[i]);
+    }
+    delete lvl;
+}
+
+
+
 void askQuestion(std::string question)
 {
     std::cout << question + "\n";
@@ -26,20 +43,6 @@ gameobj *createObj(std::string name)
     gameobj *obj = new gameobj;
     obj->name = name;
     return obj;
-}
-
-void destroyLevel(level *lvl)
-{
-    for(int i = 0; i < lvl->numObjs; i++)
-    {
-        destroyObj(lvl->levelObjs[i]);
-    }
-    delete lvl;
-}
-
-void destroyObj(gameobj *obj)
-{
-    delete obj;
 }
 
 void gameLoop()
