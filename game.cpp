@@ -17,9 +17,9 @@ class Q
 
         ~Q()
         {
-            while(!this->isEmpty())
+            while(this->front != this->back)
             {
-               this->deq(); 
+                this->deq();
             }
             delete this->front;
         }
@@ -28,7 +28,8 @@ class Q
         {
             return this->front == this->back; 
         }
-        
+
+
         void enq(event action)
         {
            node_t newNode = new node;

@@ -27,6 +27,7 @@ typedef struct
     obj_t* levelObjs;
     int numObjs;
 } level;
-typedef level* level_t;
 
+typedef level* level_t;
+typedef void free_fn(string);
 #endif
