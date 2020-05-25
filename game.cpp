@@ -1,6 +1,7 @@
 #include "game.h"
 #include <iostream>
 
+
 void destroyObj(gameobj *obj)
 {
     delete obj;
@@ -15,8 +16,6 @@ void destroyLevel(level *lvl)
     }
     delete lvl;
 }
-
-
 
 void askQuestion(std::string question)
 {
