@@ -5,14 +5,6 @@
 
 typedef std::string event;
 
-typedef struct 
-{
-    std::string name;
-} gameobj;
-typedef gameobj* obj_t;
-
-
-
 struct node
 {
     event userEvent;
@@ -23,11 +15,10 @@ typedef node* node_t;
 
 typedef struct
 {
-    int levelNum;
-    obj_t* levelObjs;
+    std::string levelName;
+    std::string* levelObjs;
     int numObjs;
 } level;
 
 typedef level* level_t;
-typedef void free_fn(string);
 #endif

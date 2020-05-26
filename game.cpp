@@ -1,13 +1,13 @@
 #include "game.h"
 #include <iostream>
 
-class Q
+class Queue
 {
     node_t front;
     node_t back;
     public:
         
-        Q() {
+        Queue() {
             node_t newNode = new node;
             newNode->nextEvent = nullptr;
             newNode->userEvent = "";
@@ -15,7 +15,7 @@ class Q
             this->back = newNode;
         }
 
-        ~Q()
+        ~Queue()
         {
             while(this->front != this->back)
             {
@@ -33,9 +33,10 @@ class Q
         void enq(event action)
         {
            node_t newNode = new node;
-           newNode->userEvent = action;
+           newNode->userEvent = "";
            newNode->nextEvent = nullptr;
            this->back->nextEvent = newNode;
+           this->back->userEvent = action;
            this->back = newNode; 
         }
         
@@ -50,22 +51,12 @@ class Q
 };
 
 
-void destroyObj(gameobj *obj)
-{
-    delete obj;
-}
-
-
 void destroyLevel(level *lvl)
 {
-    for(int i = 0; i < lvl->numObjs; i++)
-    {
-        destroyObj(lvl->levelObjs[i]);
-    }
     delete lvl;
 }
 
-void askQuestion(std::string question)
+void askQuestion(event question)
 {
     std::cout << question + "\n";
 }
@@ -75,35 +66,34 @@ void getResponse(std::string response)
     std::getline(std::cin, response);
 }
 
-level *createLevel(int levelnum, gameobj *objs, int numObjs)
+level *createLevel(std::string levelName, std::string* levelObjs, int numObjs)
 {
-    level *lvl = new level;
-    lvl->levelNum = levelnum;
-    gameobj **gameObjArr = new gameobj*[numObjs];
-    lvl->levelObjs = gameObjArr;
+    level* lvl = new level;
+    lvl->levelName = levelName;
+    lvl->levelObjs = levelObjs;
     lvl->numObjs = numObjs;
     return lvl;
 }
 
-gameobj *createObj(std::string name)
+event processResponse(event res)
 {
-    gameobj *obj = new gameobj;
-    obj->name = name;
-    return obj;
-}
 
-void gameLoop()
-{
-    while(true)
-    {
-        std::string response;
-        askQuestion("Welcome!");
-        getResponse(response);
-    }
 }
 
 int main()
 {
-    gameLoop();
+    Queue instructionQ;
+    event response;
+    level_t bedroom = createLevel("bedroom", nullptr, 0);
+    
+    instructionQ.enq("Welcome to the game! Type mling2 to verify that its you");
+    while(!instructionQ.isEmpty()) 
+    {
+        askQuestion(instructionQ.deq());
+        getResponse(response);
+        event newResponse = processResponse(response);
+        if(newResponse != "") instructionQ.enq(newResponse);
+    }
+    askQuestion("video link");
     return 0;
 }
