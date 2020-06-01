@@ -75,17 +75,62 @@ level *createLevel(std::string levelName, std::string* levelObjs, int numObjs)
     return lvl;
 }
 
+level_t* createLevels()
+{
+    level_t* levels = new level_t[3];
+
+    std::string* bedroomObjs = new std::string[1];
+    bedroomObjs[0] = "computer";
+    level_t bedroom = createLevel("bedroom", bedroomObjs, 1);
+    levels[0] = bedroom;
+    
+    std::string* kitchenObjs = new std::string[2]; 
+    kitchenObjs[0] = "Hard boiled egg";
+    kitchenObjs[1] = "Wafflonia waffle";
+    level_t kitchen = createLevel("kitchen", kitchenObjs, 2);
+    levels[1] = kitchen;
+    
+    std::string* dingdingRoomObjs = new std::string[2];
+    dingdingRoomObjs[1] = "Tennis racket";
+    dingdingRoomObjs[2] = "Really good report card";
+    level_t dingdingRoom = createLevel("Ding ding's room", dingdingRoomObjs, 2);
+    levels[2] = dingdingRoom;
+    return levels;
+}
+
+void updateLevel(event lvlName)
+{
+    for(int i = 0; i < numLevels; i++)
+    {
+        if(lvlName == gameLevels[i]->levelName)
+        {
+            currentLevel = gameLevels[i];
+            break;
+        }
+    }    
+}
+
 event processResponse(event res)
 {
-
+    event result;
+    if(res == "bedroom" || res == "kitchen" || res == "Ding ding's room")
+    {
+        updateLevel(res);
+    }
+    return result;
 }
+
+//Global Game info
+level_t* gameLevels = createLevels();
+int numLevels = 3;
+level_t currentLevel = gameLevels[0];
 
 int main()
 {
     Queue instructionQ;
     event response;
-    level_t bedroom = createLevel("bedroom", nullptr, 0);
     
+     
     instructionQ.enq("Welcome to the game! Type mling2 to verify that its you");
     while(!instructionQ.isEmpty()) 
     {
