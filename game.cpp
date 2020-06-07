@@ -1,5 +1,6 @@
 #include "game.h"
 #include <iostream>
+#include <vector>
 
 class Queue
 {
@@ -66,35 +67,78 @@ void getResponse(std::string response)
     std::getline(std::cin, response);
 }
 
-level *createLevel(std::string levelName, std::string* levelObjs, int numObjs)
+level_t createBedroomLevel()
 {
-    level* lvl = new level;
-    lvl->levelName = levelName;
-    lvl->levelObjs = levelObjs;
-    lvl->numObjs = numObjs;
-    return lvl;
-}
-
-level_t* createLevels()
-{
-    level_t* levels = new level_t[3];
+    level* bedroom = new level;
+    bedroom->levelName = "Bedroom";
 
     std::string* bedroomObjs = new std::string[1];
     bedroomObjs[0] = "computer";
-    level_t bedroom = createLevel("bedroom", bedroomObjs, 1);
-    levels[0] = bedroom;
+    bedroom->levelObjs = bedroomObjs;
+
+    bedroom->numObjs = 1;
     
+    std::string* bedroomActions = new std::string[3]; 
+    bedroomActions[0] = "use computer";
+    bedroomActions[1] = "goto kitchen";
+    bedroomActions[2] = "goto bedroom";
+    bedroom->levelActions = bedroomActions;
+    return bedroom;
+}
+
+level_t createDingDingRoom()
+{
+    level* dingDingRoom = new level;
+    dingDingRoom->levelName = "Ding Ding's Room";
+
+    std::string* dingDingRoomObjs = new std::string[2];
+    dingDingRoomObjs[0] = "Tennis racket";
+    dingDingRoomObjs[1] = "Really good report card";
+    dingDingRoom->levelObjs = dingDingRoomObjs;
+     
+    dingDingRoom->numObjs = 2;
+
+    std::string* dingDingRoomActions = new std::string[2];
+    dingDingRoomActions[0] = "Play tennis";
+    dingDingRoomActions[1] = "Tell Ding Ding Good job!";
+    dingDingRoom->levelActions = dingDingRoomActions;
+
+    return dingDingRoom;
+}
+
+level_t createKitchen()
+{
+    level* kitchen = new level;
+    kitchen->levelName = "Kitchen";
+
     std::string* kitchenObjs = new std::string[2]; 
     kitchenObjs[0] = "Hard boiled egg";
     kitchenObjs[1] = "Wafflonia waffle";
-    level_t kitchen = createLevel("kitchen", kitchenObjs, 2);
-    levels[1] = kitchen;
+    kitchen->levelObjs = kitchenObjs; 
+
+    kitchen->numObjs = 2; 
+
+    std::string* kitchenActions = new std::string[3];
+    kitchenActions[0] = "Make noodles";
+    kitchenActions[1] = "Goto Ding Ding's Room";
+    kitchenActions[2] = "Goto your room";
+    kitchen->levelActions = kitchenActions;
     
-    std::string* dingdingRoomObjs = new std::string[2];
-    dingdingRoomObjs[1] = "Tennis racket";
-    dingdingRoomObjs[2] = "Really good report card";
-    level_t dingdingRoom = createLevel("Ding ding's room", dingdingRoomObjs, 2);
-    levels[2] = dingdingRoom;
+    return kitchen;
+}
+
+std::vector<level_t> createLevels()
+{
+    std::vector<level_t> levels;
+    level_t bedroom = createBedroomLevel();
+    levels.push_back(bedroom);
+    
+    level_t dingDingRoom = createDingDingRoom();
+    levels.push_back(dingDingRoom);
+
+    level_t kitchen = createKitchen();
+    levels.push_back(kitchen);
+       
     return levels;
 }
 
@@ -121,7 +165,7 @@ event processResponse(event res)
 }
 
 //Global Game info
-level_t* gameLevels = createLevels();
+std::vector<level_t> gameLevels = createLevels();
 int numLevels = 3;
 level_t currentLevel = gameLevels[0];
 

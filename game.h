@@ -17,6 +17,7 @@ typedef struct
 {
     std::string levelName;
     std::string* levelObjs;
+    std::string* levelActions;
     int numObjs;
 } level;
 
