@@ -19,6 +19,7 @@ typedef struct
     std::string* levelObjs;
     std::string* levelActions;
     int numObjs;
+    int numActions;
 } level;
 
 typedef level* level_t;
