@@ -74,14 +74,14 @@ level_t createBedroomLevel()
     bedroom->levelName = "Bedroom";
 
     std::string* bedroomObjs = new std::string[1];
-    bedroomObjs[0] = "computer";
+    bedroomObjs[0] = "Computer";
     bedroom->levelObjs = bedroomObjs;
 
     bedroom->numObjs = 1;
     
     std::string* bedroomActions = new std::string[3]; 
     bedroomActions[0] = "Use computer";
-    bedroomActions[1] = "Goto kitchen";
+    bedroomActions[1] = "Goto Kitchen";
     bedroomActions[2] = "Goto Ding Ding's Room";
     bedroom->levelActions = bedroomActions;
     
@@ -101,14 +101,18 @@ level_t createDingDingRoom()
      
     dingDingRoom->numObjs = 2;
 
-    std::string* dingDingRoomActions = new std::string[4];
-    dingDingRoomActions[0] = "Play tennis";
-    dingDingRoomActions[1] = "Tell Ding Ding Good job!";
-    dingDingRoomActions[2] = "Goto your room";
-    dingDingRoomActions[3] = "Goto kitchen";
+    std::string* dingDingRoomActions = new std::string[6];
+    dingDingRoomActions[0] = "Goto your room";
+    dingDingRoomActions[1] = "Goto Kitchen";
+    dingDingRoomActions[2] = "Play Tennis";
+    dingDingRoomActions[3] = "Tell Ding Ding Good job!";
+    dingDingRoomActions[4] = "Pick up Racket";
+    dingDingRoomActions[5] = "Pick up Report Card";
+
+
     dingDingRoom->levelActions = dingDingRoomActions;
 
-    dingDingRoom->numActions = 4;
+    dingDingRoom->numActions = 6;
     return dingDingRoom;
 }
 
@@ -163,34 +167,15 @@ void updateLevel(event lvlName)
     }    
 }
 
-event processResponse(event res)
-{
-    event result;
-    
-    if(currentLevel->levelName == "Kitchen") 
-    {
-        result = processKitchen(res);
-    }
-    else if(currentLevel->levelName == "Ding Ding's Room") 
-    {
-        result = processDingDingRoom(res);
-    }
-    else 
-    {
-        result = processBedroom(res);
-    }
-    return result;
-}
-
 event processKitchen(event res) {
     int index = -1;
-    for(int i = 0; i < currentLevel->numActions) {
+    for(int i = 0; i < currentLevel->numActions; i++) {
         if(currentLevel->levelActions[i] == res) {
             index = i;
         }
     } 
     switch(index) {
-
+        // Invalid Command
         case -1: return "Invalid command!";
         // Make noodles
         case 0: 
@@ -228,12 +213,116 @@ event processKitchen(event res) {
 }
 
 event processDingDingRoom(event res) {
-
+    int index = -1;
+    for(int i = 0; i < currentLevel->numActions; i++) {
+        if(currentLevel->levelActions[i] == res) {
+            index = i;
+        }
+    }
+    switch(index)
+    {
+        case -1: 
+            return "Invalid Command!";
+        // Goto your room
+        case 0:
+            updateLevel("Bedroom");
+            return "Went to your room (can I come too?)";
+        // Goto kitchen
+        case 1: 
+            updateLevel("Kitchen");
+            return "Went to kitchen, time to cook!";
+        // Play Tennis
+        case 2: 
+            if(inventory.count("Tennis Racket") == 1)
+            {
+                if(inventory.count("Played Tennis") == 0)
+                {
+                    inventory.insert("Played Tennis");
+                }
+                return "What a good sister playing tennis with your brother";
+            }
+            return "You need a tennis racket to play tennis";
+        // Congratulate Ding Ding on his report card!
+        case 3: 
+            if(inventory.count("Report Card") == 1)
+            {
+                if(inventory.count("Congratulated Ding Ding") == 0)
+                {
+                    inventory.insert("Congratulated Ding Ding");
+                }
+                return "Ding ding is so smart, good job motivating him to work!";
+            }
+            return "How can you congratulate Ding Ding if you don't know his grades?";
+        // Pick up tennis racket
+        case 4: 
+            if(inventory.count("Tennis Racket") == 0)
+            {
+                inventory.insert("Tennis Racket");
+                return "Picked up a tennis racket";
+            }
+            return "You already got a tennis racket";
+        // Pick up report card
+        case 5:
+            if(inventory.count("Report Card") == 0)
+            {
+                inventory.insert("Report Card");
+                return "Picked up Ding Ding's Report Card";
+            }
+            return "One of his report cards is enough...";
+    }
 }
 
 event processBedroom(event res) {
-
+    int index = -1;
+    for(int i = 0; i < currentLevel->numActions; i++) {
+        if(currentLevel->levelActions[i] == res) {
+            index = i;
+        }
+    }
+    switch(index)
+    {
+        // Invalid Command
+        case -1:
+            return "Invalid command";
+        // Turn on computer
+        case 0:
+            if(inventory.count("Congratulated Ding Ding") == 1 
+            && inventory.count("Zha Jian Mian") == 1)
+            {
+                return "You see that Patrick Huang (what a guy) has sent you a new text! It's got a link to a new video";   
+            }
+            return "You still have to make some noodles or talk to your brother!";
+        // Goto Kitchen
+        case 1:
+            updateLevel("Kitchen");
+            return "Went to kitchen!";
+        // Goto Ding Ding's Room
+        case 2:
+            updateLevel("Ding Ding's Room");
+            return "Went to Ding Ding's Room (he's probably playing league rn)";
+    }
 }
+
+event processResponse(event res)
+{
+    event result;
+    
+    if(currentLevel->levelName == "Kitchen") 
+    {
+        result = processKitchen(res);
+    }
+    else if(currentLevel->levelName == "Ding Ding's Room") 
+    {
+        result = processDingDingRoom(res);
+    }
+    else 
+    {
+        result = processBedroom(res);
+    }
+    return result;
+}
+
+
 
 
 //Global Game info
