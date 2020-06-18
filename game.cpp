@@ -52,18 +52,12 @@ class Queue
         }
 };
 
-
-void destroyLevel(level *lvl)
-{
-    delete lvl;
-}
-
 void askQuestion(event question)
 {
     std::cout << question + "\n";
 }
 
-void getResponse(std::string response)
+void getResponse(std::string & response)
 {
     std::getline(std::cin, response);
 }
@@ -155,6 +149,12 @@ std::vector<level_t> createLevels()
     return levels;
 }
 
+std::unordered_set<std::string> inventory;
+std::vector<level_t> gameLevels = createLevels();
+int numLevels = 3;
+level_t currentLevel = gameLevels[0];
+
+
 void updateLevel(event lvlName)
 {
     for(int i = 0; i < numLevels; i++)
@@ -167,6 +167,28 @@ void updateLevel(event lvlName)
     }    
 }
 
+event printCmds() {
+    std::string resp = "Here are the possible commands: ";
+    for(int j = 0; j < currentLevel->numActions; j++)
+    {
+        std::string curCommand = currentLevel->levelActions[j];
+        resp.append(curCommand + ", ");
+    }
+    resp.append("\n\nThis isn't a command but I'm too lazy to remove the last comma so here you go");
+    return resp;
+}
+
+event printObjs() {
+    std::string resp = "Here are the objects in this room: ";
+    for(int j = 0; j < currentLevel->numObjs; j++)
+    {
+        std::string curObj = currentLevel->levelObjs[j];
+        resp.append(curObj + ", ");
+    }
+    resp.append("\n\nThis isn't an obj, I'm just lazy here too");
+    return resp;
+}
+
 event processKitchen(event res) {
     int index = -1;
     for(int i = 0; i < currentLevel->numActions; i++) {
@@ -174,6 +196,8 @@ event processKitchen(event res) {
             index = i;
         }
     } 
+    if(res == "cmds") index = 5;
+    if(res == "objs") index = 6;
     switch(index) {
         // Invalid Command
         case -1: return "Invalid command!";
@@ -209,6 +233,10 @@ event processKitchen(event res) {
                 return "Picked up 炸醬 (no simplified here)";
             }
             return "How much black sauce does a girl need";
+        case 5:
+            return printCmds();
+        case 6: 
+            return printObjs();
     }
 }
 
@@ -219,6 +247,8 @@ event processDingDingRoom(event res) {
             index = i;
         }
     }
+    if(res == "cmds") index = 6;
+    if(res == "objs") index = 7;
     switch(index)
     {
         case -1: 
@@ -269,6 +299,10 @@ event processDingDingRoom(event res) {
                 return "Picked up Ding Ding's Report Card";
             }
             return "One of his report cards is enough...";
+        case 6:
+            return printCmds();
+        case 7: 
+            return printObjs();
     }
 }
 
@@ -279,6 +313,8 @@ event processBedroom(event res) {
             index = i;
         }
     }
+    if(res == "cmds") index = 3;
+    if(res == "objs") index = 4;
     switch(index)
     {
         // Invalid Command
@@ -300,14 +336,22 @@ event processBedroom(event res) {
         case 2:
             updateLevel("Ding Ding's Room");
             return "Went to Ding Ding's Room (he's probably playing league rn)";
+        case 3:
+            return printCmds();
+        case 4: 
+            return printObjs();
     }
 }
 
 event processResponse(event res)
 {
     event result;
-    
-    if(currentLevel->levelName == "Kitchen") 
+
+    if(res == "lvl")
+    {
+        result = currentLevel->levelName;
+    }
+    else if(currentLevel->levelName == "Kitchen") 
     {
         result = processKitchen(res);
     }
@@ -322,22 +366,34 @@ event processResponse(event res)
     return result;
 }
 
-
-
-
-//Global Game info
-std::unordered_set<std::string> inventory;
-std::vector<level_t> gameLevels = createLevels();
-int numLevels = 3;
-level_t currentLevel = gameLevels[0];
-
 int main()
 {
     Queue instructionQ;
     event response;
-    
      
+    bool correctName = false;
     instructionQ.enq("Welcome to the game! Type mling2 to verify that its you");
+
+    while(!correctName)
+    {
+        askQuestion(instructionQ.deq());
+        getResponse(response);   
+        if(response != "mling2") 
+        {
+            event newResponse = "Wrong name dumbo";
+            instructionQ.enq(newResponse);
+        }
+        else
+        {
+            correctName = true;
+            event newResponse = "Welcome to the game. \n Type 'cmds' to view all " 
+                                "available commands. \n Type 'objs' to view all "
+                                "objects in the current level. \n Type 'lvl' to "
+                                "view the current room you are in. Hf!";
+            instructionQ.enq(newResponse);
+        }
+    }
+    
     while(!instructionQ.isEmpty()) 
     {
         askQuestion(instructionQ.deq());
@@ -346,5 +402,13 @@ int main()
         if(newResponse != "") instructionQ.enq(newResponse);
     }
     askQuestion("video link");
+    while(gameLevels.size() != 0)
+    {
+        level_t curLevel = gameLevels.back();
+        gameLevels.pop_back();
+        delete[] curLevel->levelActions;
+        delete[] curLevel->levelObjs;
+        delete curLevel; 
+    }
     return 0;
 }
