@@ -223,6 +223,6 @@ def main():
             newAns = processResult(answer)
             q.put(newAns)
     print("You see that patdick sent you a new text! It seems to be a youtube link...")
-    print("link placeholder")
+    print("https://www.youtube.com/watch?v=SIntPPs3VMg")
 
 main()
